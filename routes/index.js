@@ -9,10 +9,11 @@ const {
   createUser,
   logout,
 } = require('../controllers/users');
+const { validationCreateUser, validationLogin } = require('../middlewares/validations');
 
-router.post('/signup', createUser);
+router.post('/signup', validationCreateUser, createUser);
 router.use(cookieParser());
-router.post('/signin', login);
+router.post('/signin', validationLogin, login);
 router.use(auth);
 router.use('/users', usersRouter);
 router.use('/movies', moviesRouter);
