@@ -36,12 +36,13 @@ const login = (req, res, next) => {
   User.findOne({ email }).select('+password')
     .orFail(() => {
       throw new AuthError('Неправильная почта или пароль');
-    }).then((user) => {
-      if (bcrypt.compare(password, user.password)) {
-        return user._id;
-      }
-      throw new AuthError('Неправильная почта или пароль');
-    })
+    }).then((user) => bcrypt.compare(password, user.password)
+      .then((matched) => {
+        if (matched) {
+          return user._id;
+        }
+        throw new AuthError('Неправильная почта или пароль');
+      }))
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : 'super-strong-secret', { expiresIn: '7d' });
       res.status(200).cookie('jwt', token, {

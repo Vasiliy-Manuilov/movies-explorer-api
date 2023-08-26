@@ -9,20 +9,13 @@ const apiLimiter = require('./middlewares/apiLimiter');
 const handelError = require('./middlewares/handelError');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const routes = require('./routes');
+const { PORT, DB_URL } = require('./utils/config');
 
-const { PORT = 3000, DB_URL = 'mongodb://127.0.0.1:27017/bitfilmsdb' } = process.env;
 const app = express();
-// app.use(cors({ origin: 'https://название.nomoreparties.co', credentials: true }));
+// app.use(cors({ origin: 'https://list-movies.nomoredomainsicu.ru', credentials: true }));
 app.use(requestLogger);
 app.use(helmet());
 app.use(bodyParser.json());
-
-app.get('/crash-test', () => {
-  setTimeout(() => {
-    throw new Error('Сервер сейчас упадёт');
-  }, 0);
-});
-
 app.use(apiLimiter);
 app.use(routes);
 app.use(errorLogger);
